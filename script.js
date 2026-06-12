@@ -1,6 +1,24 @@
-function generate() {
-  let input = document.getElementById("input").value;
+async function generate() {
+
+  const input =
+    document.getElementById("input").value;
 
   document.getElementById("output").innerHTML =
-    "🔥 Viral Caption: " + input + " is trending right now! Don't miss it!";
+    "Generating...";
+
+  const response = await fetch("/api/generate", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      prompt:
+        `Write a viral Instagram caption for ${input}`
+    }),
+  });
+
+  const data = await response.json();
+
+  document.getElementById("output").innerHTML =
+    data.text;
 }
