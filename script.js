@@ -1,24 +1,29 @@
-async function generate() {
+// generate.js script for BrandReply AI
+const { GoogleGenerativeAI } = require("@google/generative-ai"); // Optional, check your current setup
 
-  const input =
-    document.getElementById("input").value;
+export default async function handler(req, res) {
+  const { prompt } = req.body;
 
-  document.getElementById("output").innerHTML =
-    "Generating...";
+  try {
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        "HTTP-Referer": "https://your-site-url.vercel.app", // Yahan apni site ka URL daalein
+        "X-Title": "BrandReply AI",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        "model": "nvidia/llama-nemotron-rerank-vl-1b-v2:free", // Aapka selected free model
+        "messages": [
+          { "role": "user", "content": prompt }
+        ]
+      })
+    });
 
-  const response = await fetch("/api/generate", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      prompt:
-        `Write a viral Instagram caption for ${input}`
-    }),
-  });
-
-  const data = await response.json();
-
-  document.getElementById("output").innerHTML =
-    JSON.stringify(data);
+    const data = await response.json();
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to generate content", details: error.message });
+  }
 }
