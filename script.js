@@ -20,5 +20,5 @@ async function generate() {
   const data = await response.json();
 
   document.getElementById("output").innerHTML =
-    data.text;
+    JSON.stringify(data);
 }
